@@ -4,7 +4,6 @@ package ru.tinkoff.TestAPI;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
@@ -25,7 +24,7 @@ public class AppTest {
 	public void givenUserExists_whenUserInformationIsRetrieved_thenRetrievedResourceIsCorrect() throws ClientProtocolException, IOException   {
 		// Given
 		final HttpUriRequest request = new HttpGet(Constants.URL);
-		final Map<String,Integer> testData = new Config().readConfig(new FileReader(Constants.CONFIG_FILE));
+		final Map<Integer,String> testData = new Config().readConfig(new FileReader(Constants.CONFIG_FILE));
 
 		// When
 		final HttpResponse response = HttpClientBuilder.create().build().execute(request);
@@ -38,12 +37,13 @@ public class AppTest {
 		List<JsonNode> currency = resource.findValues("toCurrency");
 		currency.addAll(resource.findValues("fromCurrency"));
 		for ( JsonNode node : currency ){
-			String name = node.get("name").asText();
-			int code = node.get("code").asInt();
 			
-			if (testData.containsKey(name)){
+			int code = node.get("code").asInt();
+			String name = node.get("name").asText();
+			
+			if (testData.containsKey(code)){
 				//Main assert
-				assertEquals(testData.get(name).intValue(),code);
+				assertEquals(testData.get(code),name);
 			}
 			else continue;
 			
